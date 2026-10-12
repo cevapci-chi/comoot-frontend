@@ -9,9 +9,21 @@ export default defineConfig({
 		sveltekit(),
 	],
 	server: {
-		allowedHosts: true
+		allowedHosts: true,
+		proxy: {
+			'/api': {
+				target: 'http://localhost:8000',
+				changeOrigin: true
+			}
+		}
 	},
 	preview: {
-		allowedHosts: true
+		allowedHosts: true,
+		proxy: {
+			'/api': {
+				target: 'http://localhost:8000',
+				changeOrigin: true
+			}
+		}
 	}
 });
