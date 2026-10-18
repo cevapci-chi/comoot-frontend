@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.0",
@@ -14,9 +16,12 @@
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "@tailwindcss/vite": "^4.0.0",
     "svelte": "^5.0.0",
+    "svelte-check": "^4.7.7",
     "tailwindcss": "^4.0.0",
+    "typescript": "^5.9.3",
     "vite": "^6.0.0",
-    "vite-plugin-pwa": "^0.20.0"
+    "vite-plugin-pwa": "^0.20.0",
+    "vitest": "^4.1.12"
   },
   "dependencies": {
     "chart.js": "^4.5.1",
