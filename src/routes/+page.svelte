@@ -1,8 +1,10 @@
 <script lang="ts">
 	import Map from '$lib/Map.svelte';
 	import Geocoder from '$lib/Geocoder.svelte';
+	import { api } from '$lib/api';
+	import type { PlanRequest, PlanResponse, Profile } from '$lib/types';
 
-	let selectedProfile = 'gravel';
+	let selectedProfile: Profile = 'gravel';
 
 	// Waypoints
 	let waypoints: Array<{lon: number; lat: number; label: string; color: string}> = [];
@@ -16,7 +18,7 @@
 	let surfaceBreakdown = '–';
 	let loading = false;
 	let errorMsg = '';
-	let routeResult: any = null;
+	let routeResult: PlanResponse | null = null;
 
 	// Recent center
 	let mapCenter: [number, number] = [11.5756, 48.1374];
@@ -90,24 +92,19 @@
 		const pts = waypoints.filter((_, i) => i === 0 || i === waypoints.length - 1);
 		if (waypoints.length > 2) pts.splice(1, 0, ...waypoints.slice(1, waypoints.length - 1).map((w) => w));
 
-		const body = {
-			waypoints: pts.map(wp => ({lat: wp.lat, lng: wp.lon})),
+		const body: PlanRequest = {
+			waypoints: pts.map((wp) => ({ lat: wp.lat, lng: wp.lon })),
 			profile: selectedProfile,
 			preferences: { scenic: 0.5, avoid_traffic: 0.5, wind_optimize: false, max_gradient: 15 }
 		};
 
 		try {
-			const res = await fetch('/api/routing/plan', {
-				method: 'POST', headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(body)
-			});
-			if (!res.ok) { throw new Error(await res.text()); }
-			const data = await res.json();
+			const data = await api.planRoute(body);
 			routeResult = data;
 			routeCoords = data.geometry?.coordinates || [];
 			distanceKm = data.distance_km || 0;
 			elevationGain = data.elevation_gain || 0;
-			const sb = data.surface_breakdown || {asphalt:0, gravel:0, trail:0};
+			const sb = data.surface_breakdown || { asphalt: 0, gravel: 0, trail: 0 };
 			surfaceBreakdown = `${sb.asphalt}% Asphalt, ${sb.gravel}% Gravel, ${sb.trail}% Trail`;
 		} catch (e: any) {
 			errorMsg = e.message || 'Fehler bei der Routenberechnung';
